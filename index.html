@@ -340,7 +340,9 @@
         
         async function extractData(base64ImageData, mimeType) {
             dom.loadingSpinner.classList.remove('hidden');
-            const apiKey="",model="gemini-2.5-flash-preview-05-20",url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            const apiKey=firebaseConfig.apiKey; // Use the correct API key from your config
+            const model="gemini-2.5-flash-preview-05-20";
+            const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
             const sysPrompt=`You are an expert OCR system for passports. Extract the following information and return it as a valid JSON object: Issuing Country Code, Passport No., Surname, Given Name, Nationality, Sex, Date of Birth, Place of Birth, Date of Issue, Date of Expiry. Crucially, all dates must be formatted as YYYY-MM-DD. If a field is not present, use "N/A".`;
             const payload={contents:[{parts:[{text:"Extract passport info."}, {inlineData:{mimeType, data:base64ImageData}}]}], systemInstruction:{parts:[{text:sysPrompt}]}, generationConfig:{responseMimeType:"application/json"}};
             try {
@@ -349,9 +351,17 @@
                 if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
                     extractedJson = JSON.parse(result.candidates[0].content.parts[0].text);
                     displayExtractedData(extractedJson);
-                } else { console.error("No data:", result); displayError("Failed to extract info."); }
-            } catch (e) { console.error("API error:", e); displayError("Error processing image."); } 
-            finally { dom.loadingSpinner.classList.add('hidden'); }
+                } else { 
+                    console.error("No data in Gemini response:", result); 
+                    displayError("Failed to extract info."); 
+                }
+            } catch (e) { 
+                console.error("Gemini API error:", e); 
+                displayError("Error processing image."); 
+            } 
+            finally { 
+                dom.loadingSpinner.classList.add('hidden'); 
+            }
         }
 
         function displayExtractedData(data) {
@@ -413,7 +423,9 @@
         // --- Gemini LLM Call ---
         async function getTravelAssistance(prompt, resultContainer) {
             resultContainer.innerHTML = '<div class="flex justify-center items-center p-4"><div class="loader"></div></div>';
-            const apiKey="",model="gemini-2.5-flash-preview-05-20",url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            const apiKey=firebaseConfig.apiKey; // Use the correct API key from your config
+            const model="gemini-2.5-flash-preview-05-20";
+            const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 tools: [{ "google_search": {} }],
@@ -607,4 +619,5 @@
     </script>
 </body>
 </html>
+" selected, can you make the selected code shorter. I will give you more instructions on what to do with it after you have made it shorter.
 
