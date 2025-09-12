@@ -214,10 +214,14 @@
     
     <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-2"></div>
 
+    <footer class="text-center py-8 text-sm text-[var(--text-secondary)]">
+        <p>Intelligent travel system I Powered by Travelverse</p>
+    </footer>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, setLogLevel, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Configuration for Standalone Deployment ---
         const firebaseConfig = {
@@ -233,7 +237,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        setLogLevel('debug');
 
         let userId = null;
         let extractedJson = null;
@@ -619,5 +622,4 @@
     </script>
 </body>
 </html>
-" selected, can you make the selected code shorter. I will give you more instructions on what to do with it after you have made it shorter.
 
