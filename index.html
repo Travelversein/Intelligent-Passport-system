@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" class="">
-<head>
+<html lang="en" class="dark"> <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Passport Information Extractor</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-        // Set theme on initial load
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        // Theme script is kept for toggling, but defaults to dark now.
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage))) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
@@ -19,34 +21,37 @@
         }
     </script>
     <style>
+        /* --- NEW UI STYLE DEFINITIONS --- */
         :root {
+            /* Light theme colors (kept for toggle functionality) */
             --bg-primary: #ffffff;
-            --bg-secondary: #f5f5f7;
+            --bg-secondary: #f4f4f4;
             --bg-tertiary: #ffffff;
-            --text-primary: #1d1d1f;
-            --text-secondary: #6e6e73;
-            --border-color: #d2d2d7;
-            --accent-color: #007aff;
+            --text-primary: #000000;
+            --text-secondary: #666666;
+            --border-color: #e5e5e5;
+            --accent-color: #000000;
             --shadow-color: rgba(0, 0, 0, 0.05);
-            --btn-primary-bg: #007aff;
+            --btn-primary-bg: #000000;
             --btn-primary-text: #ffffff;
-            --btn-secondary-bg: #e8e8ea;
-            --btn-secondary-text: #1d1d1f;
+            --btn-secondary-bg: #e5e5e5;
+            --btn-secondary-text: #000000;
         }
 
         .dark {
-            --bg-primary: #1d1d1f;
+            /* Dark theme inspired by narrativeco.in */
+            --bg-primary: #0a0a0a;
             --bg-secondary: #000000;
-            --bg-tertiary: #161617;
-            --text-primary: #f5f5f7;
-            --text-secondary: #86868b;
-            --border-color: #3a3a3c;
-            --accent-color: #0a84ff;
+            --bg-tertiary: #0a0a0a;
+            --text-primary: #ffffff;
+            --text-secondary: #999999;
+            --border-color: #222222;
+            --accent-color: #ffffff;
             --shadow-color: rgba(0, 0, 0, 0.2);
-            --btn-primary-bg: #0a84ff;
-            --btn-primary-text: #ffffff;
-            --btn-secondary-bg: #2c2c2e;
-            --btn-secondary-text: #f5f5f7;
+            --btn-primary-bg: #ffffff;
+            --btn-primary-text: #000000;
+            --btn-secondary-bg: #1f1f1f;
+            --btn-secondary-text: #ffffff;
         }
 
         body {
@@ -56,57 +61,115 @@
             transition: background-color 0.3s, color 0.3s;
         }
         
+        /* Main panels with sharp corners */
         .main-panel {
             background-color: var(--bg-tertiary);
-            border-radius: 18px;
+            border-radius: 0; /* Sharp corners */
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px var(--shadow-color);
+            box-shadow: none; /* Removed shadow for a flatter look */
             transition: background-color 0.3s, border-color 0.3s;
         }
 
-        h2 { font-size: 1.75rem; font-weight: 600; color: var(--text-primary); }
+        /* --- REFINED TYPOGRAPHY HIERARCHY --- */
+        .title-main {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4rem; /* Main title size */
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+        .title-section { 
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.75rem; /* Reduced section title size */
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-primary); 
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color); /* Separator line */
+        }
+        h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
         p { color: var(--text-secondary); }
 
+        /* Redesigned buttons */
         .btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            padding: 10px 18px;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            border: none;
+            gap: 0.75rem;
+            padding: 12px 20px;
+            border-radius: 0; /* Sharp corners */
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid transparent;
             cursor: pointer;
-            transition: transform 0.1s ease, background-color 0.2s ease, opacity 0.2s ease;
+            transition: all 0.2s ease;
         }
-        .btn:active { transform: scale(0.97); }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Outlined primary button style */
+        .btn-primary {
+            background-color: transparent;
+            color: var(--text-primary);
+            border-color: var(--text-primary);
         }
+        .dark .btn-primary:hover:not(:disabled) { background-color: var(--text-primary); color: var(--bg-primary); }
+        .light .btn-primary:hover:not(:disabled) { background-color: var(--text-primary); color: var(--bg-primary); }
 
-        .btn-primary { background-color: var(--btn-primary-bg); color: var(--btn-primary-text); }
-        .btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
-        
-        .btn-secondary { background-color: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
-        .btn-secondary:hover:not(:disabled) { filter: brightness(0.95); }
-        .dark .btn-secondary:hover:not(:disabled) { filter: brightness(1.15); }
+        /* Solid secondary button style */
+        .btn-secondary { 
+            background-color: var(--btn-secondary-bg); 
+            color: var(--btn-secondary-text);
+            border-color: var(--btn-secondary-bg);
+        }
+        .btn-secondary:hover:not(:disabled) { filter: brightness(1.2); }
+        .dark .btn-secondary:hover:not(:disabled) { filter: brightness(1.2); }
 
+        /* Redesigned form inputs */
         .form-input, .form-select {
             width: 100%;
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 0;
             padding: 10px 14px;
             color: var(--text-primary);
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
         }
+        .dark .form-input, .dark .form-select { background-color: #000; }
         .form-input:focus, .form-select:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px var(--accent-color-translucent, rgba(0, 122, 255, 0.2));
+            background-color: var(--bg-tertiary);
+            box-shadow: none;
         }
+        
+        .form-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* Improved styling for date inputs to ensure calendar icon is visible */
+        .dark input[type="date"] { color-scheme: dark; }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: brightness(0.8);
+        }
+        .dark input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) brightness(0.8);
+        }
+
 
         .loader {
             width: 24px;
@@ -129,10 +192,10 @@
 <body class="antialiased">
 
     <div class="container mx-auto p-4 md:p-8">
-        <header class="flex justify-between items-center mb-10">
+        <header class="flex justify-between items-center mb-12">
             <div class="text-left">
-                <h1 class="text-3xl md:text-4xl font-bold tracking-tighter text-[var(--text-primary)]">Travelverse Passport Extractor</h1>
-                <p class="max-w-2xl mt-2">Upload a passport image to automatically extract and save traveler information.</p>
+                <h1 class="title-main">Travelverse Passport Extractor</h1>
+                <p class="max-w-2xl mt-4">Upload a passport image to automatically extract and save traveler information.</p>
             </div>
              <div class="flex items-center gap-2">
                 <button id="theme-toggle" type="button" class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700/50 focus:outline-none transition-colors">
@@ -143,10 +206,9 @@
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Left Column: Upload and Extracted Data -->
             <div class="main-panel p-6">
-                <h2 class="text-2xl font-semibold mb-4">Upload Passport</h2>
-                <div id="upload-container" class="border-2 border-dashed border-[var(--border-color)] rounded-lg p-8 text-center cursor-pointer hover:bg-[var(--bg-secondary)] transition-colors">
+                <h2 class="title-section">Upload Passport</h2>
+                <div id="upload-container" class="border-2 border-dashed border-[var(--border-color)] p-8 text-center cursor-pointer hover:bg-[var(--bg-secondary)] transition-colors">
                     <input type="file" id="passport-upload" class="hidden" accept=".pdf,.png,.jpeg,.jpg">
                     <svg class="mx-auto h-12 w-12 text-[var(--text-secondary)]" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
                     <p class="mt-2 text-sm"><span class="font-medium text-[var(--accent-color)]">Click to upload</span> or drag and drop</p>
@@ -156,12 +218,12 @@
                  <div id="loading-spinner" class="mt-6 hidden text-center"><div class="loader mx-auto"></div><p class="mt-4">Extracting information, please wait...</p></div>
 
                 <div id="comparison-view" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 items-start">
-                    <div><img id="image-preview" src="#" alt="Passport Preview" class="w-full rounded-lg shadow-md border border-[var(--border-color)]"></div>
+                    <div><img id="image-preview" src="#" alt="Passport Preview" class="w-full border border-[var(--border-color)]"></div>
                     <div>
-                        <h3 class="text-xl font-semibold mb-4">Extracted Information</h3>
-                        <div id="extracted-data" class="space-y-3"></div>
+                        <h3>Extracted Information</h3>
+                        <div id="extracted-data" class="space-y-4"></div>
                         <div class="mt-4">
-                            <label for="tags-input" class="block text-sm font-medium mb-1">Tags (comma-separated)</label>
+                            <label for="tags-input" class="form-label mb-1 block">Tags (comma-separated)</label>
                             <input type="text" id="tags-input" placeholder="e.g. Family Trip, VIP" class="form-input text-sm">
                         </div>
                         <button id="save-button" class="btn btn-primary mt-6 w-full" disabled>
@@ -172,23 +234,22 @@
                 </div>
             </div>
 
-            <!-- Right Column: Saved Records -->
             <div class="main-panel p-6">
-                <h2 class="text-2xl font-semibold mb-4">Saved Records</h2>
+                <h2 class="title-section">Saved Records</h2>
                 <div class="flex items-center space-x-2 md:space-x-4 mb-6 text-center">
-                    <div id="dashboard-total" class="flex-1 p-2 rounded-lg cursor-pointer transition-colors"><p class="text-3xl font-bold" id="total-records">0</p><p class="text-sm">Total</p></div>
-                    <div id="dashboard-expiring-soon" class="flex-1 p-2 rounded-lg cursor-pointer transition-colors"><p class="text-3xl font-bold text-yellow-500" id="expiring-soon">0</p><p class="text-sm">Expiring &lt; 1 Yr</p></div>
-                    <div id="dashboard-expiring-6m" class="flex-1 p-2 rounded-lg cursor-pointer transition-colors"><p class="text-3xl font-bold text-red-500" id="expiring-6m">0</p><p class="text-sm">Expiring &lt; 6 Mo</p></div>
+                    <div id="dashboard-total" class="flex-1 p-2 cursor-pointer transition-colors"><p class="text-3xl font-bold font-sans" id="total-records">0</p><p class="text-xs uppercase tracking-wider">Total</p></div>
+                    <div id="dashboard-expiring-soon" class="flex-1 p-2 cursor-pointer transition-colors"><p class="text-3xl font-bold font-sans text-yellow-500" id="expiring-soon">0</p><p class="text-xs uppercase tracking-wider">Expiring &lt; 1 Yr</p></div>
+                    <div id="dashboard-expiring-6m" class="flex-1 p-2 cursor-pointer transition-colors"><p class="text-3xl font-bold font-sans text-red-500" id="expiring-6m">0</p><p class="text-xs uppercase tracking-wider">Expiring &lt; 6 Mo</p></div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div class="relative"><input type="text" id="search-bar" placeholder="Search by name or tag..." class="form-input pl-10"><svg class="w-5 h-5 text-[var(--text-secondary)] absolute left-3 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg></div>
+                    <div class="relative"><input type="text" id="search-bar" placeholder="Search..." class="form-input pl-10"><svg class="w-5 h-5 text-[var(--text-secondary)] absolute left-3 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg></div>
                     <div class="grid grid-cols-2 gap-2">
-                        <select id="sort-by" class="form-select"><option value="createdAt">Sort: Date Added</option><option value="LastName">Sort: Last Name</option><option value="DateofExpiry">Sort: Expiry</option></select>
+                        <select id="sort-by" class="form-select"><option value="createdAt">Sort: Date</option><option value="LastName">Sort: Name</option><option value="DateofExpiry">Sort: Expiry</option></select>
                         <select id="filter-expiry" class="form-select">
                             <option value="all">Filter: All</option>
-                            <option value="1y">Expiring &lt; 1 yr</option>
-                            <option value="6m">Expiring &lt; 6 mo</option>
+                            <option value="1y">Expiring &lt; 1yr</option>
+                            <option value="6m">Expiring &lt; 6mo</option>
                         </select>
                     </div>
                 </div>
@@ -199,20 +260,125 @@
     </div>
     
     <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-60 overflow-y-auto h-full w-full hidden z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-2xl bg-[var(--bg-tertiary)]">
+        <div class="relative top-20 mx-auto p-5 border w-96 bg-[var(--bg-tertiary)] border-[var(--border-color)]">
             <div class="mt-3 text-center">
                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100"><svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
                 <h3 class="text-lg leading-6 font-medium mt-2">Delete Record</h3>
                 <div class="mt-2 px-7 py-3"><p class="text-sm">Are you sure? This action cannot be undone.</p></div>
                 <div class="flex gap-2 items-center px-4 py-3">
                     <button id="cancel-delete-btn" class="btn btn-secondary w-full">Cancel</button>
-                    <button id="confirm-delete-btn" class="btn btn-primary w-full bg-red-600 hover:bg-red-700">Delete</button>
+                    <button id="confirm-delete-btn" class="btn btn-primary w-full bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700">Delete</button>
                 </div>
             </div>
         </div>
     </div>
     
     <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-2"></div>
+
+    <div id="travel-history-modal" class="fixed inset-0 bg-black bg-opacity-80  h-full w-full hidden z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-3xl bg-[var(--bg-tertiary)] border border-[var(--border-color)] p-6 space-y-4 relative">
+            <div id="th-content-to-export">
+                <h2 class="title-section !mb-4 !pb-2 !border-none" id="travel-history-title">Travel History</h2>
+                <div class="max-h-[300px] overflow-y-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b border-[var(--border-color)]">
+                            <tr>
+                                <th class="p-2 form-label">Country</th>
+                                <th class="p-2 form-label">Date of Entry</th>
+                                <th class="p-2 form-label">Date of Exit</th>
+                                <th class="p-2 form-label"># of Days</th>
+                                <th class="p-2 form-label actions-col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="travel-history-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="add-entry-form space-y-3 border-t border-[var(--border-color)] pt-4">
+                <h3 class="!text-lg">Add New Entry</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <select id="th-country" class="form-input"></select>
+                    <input type="date" id="th-entry-date" class="form-input">
+                    <input type="date" id="th-exit-date" class="form-input">
+                    <button id="th-add-btn" class="btn btn-secondary">Add</button>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center pt-4">
+                <div class="flex gap-2">
+                    <button id="th-export-csv-btn" class="btn btn-secondary">Export CSV</button>
+                    <button id="th-export-pdf-btn" class="btn btn-secondary">Export PDF</button>
+                </div>
+                <button id="th-save-btn" class="btn btn-primary">Save and Close</button>
+            </div>
+            <button id="close-travel-history-modal" class="absolute top-4 right-4 text-2xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">&times;</button>
+        </div>
+    </div>
+
+    <div id="visa-modal" class="fixed inset-0 bg-black bg-opacity-80 h-full w-full hidden z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-4xl bg-[var(--bg-tertiary)] border border-[var(--border-color)] p-6 space-y-4 relative">
+             <div id="visa-content-to-export">
+                <h2 class="title-section !mb-4 !pb-2 !border-none" id="visa-modal-title">Secured Visas</h2>
+                <div class="max-h-[300px] overflow-y-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b border-[var(--border-color)]">
+                            <tr>
+                                <th class="p-2 form-label">Country & Status</th>
+                                <th class="p-2 form-label">Applied Date</th>
+                                <th class="p-2 form-label">Approved Date</th>
+                                <th class="p-2 form-label">Valid From</th>
+                                <th class="p-2 form-label">Valid Until</th>
+                                <th class="p-2 form-label actions-col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visa-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="add-entry-form space-y-3 border-t border-[var(--border-color)] pt-4">
+                <h3 class="!text-lg">Add New Visa</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="form-label mb-1 block">Country</label>
+                        <select id="visa-country" class="form-input"></select>
+                    </div>
+                     <div>
+                        <label class="form-label mb-1 block">Applied Date</label>
+                        <input type="date" id="visa-applied-date" class="form-input">
+                    </div>
+                     <div>
+                        <label class="form-label mb-1 block">Approved Date</label>
+                        <input type="date" id="visa-approved-date" class="form-input">
+                    </div>
+                     <div>
+                        <label class="form-label mb-1 block">Valid From</label>
+                        <input type="date" id="visa-valid-from" class="form-input">
+                    </div>
+                     <div>
+                        <label class="form-label mb-1 block">Valid Until</label>
+                        <input type="date" id="visa-valid-until" class="form-input">
+                    </div>
+                    <div class="flex items-end">
+                        <button id="visa-add-btn" class="btn btn-secondary w-full">Add</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center pt-4">
+                <div class="flex gap-2">
+                    <button id="visa-export-csv-btn" class="btn btn-secondary">Export CSV</button>
+                    <button id="visa-export-pdf-btn" class="btn btn-secondary">Export PDF</button>
+                </div>
+                <button id="visa-save-btn" class="btn btn-primary">Save and Close</button>
+            </div>
+             <button id="close-visa-modal" class="absolute top-4 right-4 text-2xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">&times;</button>
+        </div>
+    </div>
+
 
     <footer class="text-center py-8 text-sm text-[var(--text-secondary)]">
         <p>Intelligent travel system I Powered by Travelverse</p>
@@ -223,7 +389,7 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Firebase Configuration for Standalone Deployment ---
+        // --- Firebase Configuration ---
         const firebaseConfig = {
           apiKey: "AIzaSyCtEzszro3KuPP__512HWj_8T16ElZUOAU",
           authDomain: "passport-technology-8ecfa.firebaseapp.com",
@@ -239,11 +405,70 @@
         const db = getFirestore(app);
 
         let userId = null;
-        let extractedJson = null;
-        let currentImageBase64Url = null;
         let allPassports = [];
-        let dataListenerUnsubscribe = null; 
+        let dataListenerUnsubscribe = null;
+        let currentEditingPassportId = null; 
 
+        // --- Data Definitions ---
+        const passportFields = [
+            { key: "givenName", label: "First Name" }, { key: "surname", label: "Last Name" },
+            { key: "passportNo", label: "Passport No." }, { key: "issuingCountryCode", label: "Issuing Country Code" },
+            { key: "nationality", label: "Nationality" }, { key: "sex", label: "Sex" },
+            { key: "dateOfBirth", label: "Date of Birth" }, { key: "placeOfBirth", label: "Place of Birth" },
+            { key: "dateOfIssue", label: "Date of Issue" }, { key: "dateOfExpiry", label: "Date of Expiry" }
+        ];
+
+        const countryList = ["Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo, Democratic Republic of the","Congo, Republic of the","Costa Rica","Cote d'Ivoire","Croatia","Cuba","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland","France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar (Burma)","Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"];
+
+        // --- Helper Functions ---
+        function formatDateForDisplay(isoDate) {
+            if (!isoDate || isoDate === "N/A" || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return isoDate;
+            const [y, m, d] = isoDate.split('-');
+            return `${d}-${m}-${y}`;
+        }
+
+        function parseDateFromDisplay(displayDate) {
+            if (!displayDate || displayDate === "N/A" || !/^\d{2}-\d{2}-\d{4}$/.test(displayDate)) return displayDate;
+            const [d, m, y] = displayDate.split('-');
+            return `${y}-${m}-${d}`;
+        }
+
+        function calculateAge(isoDate) {
+            if (!isoDate || isoDate === "N/A" || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return "N/A";
+            const birthDate = new Date(isoDate);
+            if (isNaN(birthDate.getTime())) return "N/A";
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age >= 0 ? age : "N/A";
+        }
+
+        function calculateDays(startDateStr, endDateStr) {
+            if (!startDateStr || !endDateStr) return 'N/A';
+            const start = new Date(startDateStr);
+            const end = new Date(endDateStr);
+            if (isNaN(start.getTime()) || isNaN(end.getTime()) || end < start) return 'N/A';
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Inclusive
+            return diffDays;
+        }
+
+        function getVisaStatus(validFromStr, validUntilStr) {
+            if (!validFromStr || !validUntilStr) return { text: "Unknown", color: "gray" };
+            const today = new Date();
+            today.setHours(0,0,0,0); // Normalize to start of day
+            const from = new Date(validFromStr);
+            const until = new Date(validUntilStr);
+            if (isNaN(from.getTime()) || isNaN(until.getTime())) return { text: "Unknown", color: "gray" };
+
+            if (today > until) return { text: "Expired", color: "red" };
+            if (today < from) return { text: "Upcoming", color: "yellow" };
+            return { text: "Active", color: "green" };
+        }
+        
         // --- DOM Elements ---
         const dom = { 
             uploadContainer: document.getElementById('upload-container'), passportUpload: document.getElementById('passport-upload'), loadingSpinner: document.getElementById('loading-spinner'), 
@@ -255,68 +480,106 @@
             saveButton: document.getElementById('save-button'),
             dashboardTotal: document.getElementById('dashboard-total'),
             dashboardExpiringSoon: document.getElementById('dashboard-expiring-soon'),
-            dashboardExpiring6m: document.getElementById('dashboard-expiring-6m')
+            dashboardExpiring6m: document.getElementById('dashboard-expiring-6m'),
+            travelHistoryModal: document.getElementById('travel-history-modal'),
+            closeTravelHistoryModalBtn: document.getElementById('close-travel-history-modal'),
+            travelHistoryTitle: document.getElementById('travel-history-title'),
+            travelHistoryTableBody: document.getElementById('travel-history-table-body'),
+            thCountryInput: document.getElementById('th-country'),
+            thEntryDateInput: document.getElementById('th-entry-date'),
+            thExitDateInput: document.getElementById('th-exit-date'),
+            thAddBtn: document.getElementById('th-add-btn'),
+            thSaveBtn: document.getElementById('th-save-btn'),
+            thExportCsvBtn: document.getElementById('th-export-csv-btn'),
+            thExportPdfBtn: document.getElementById('th-export-pdf-btn'),
+            visaModal: document.getElementById('visa-modal'),
+            closeVisaModalBtn: document.getElementById('close-visa-modal'),
+            visaModalTitle: document.getElementById('visa-modal-title'),
+            visaTableBody: document.getElementById('visa-table-body'),
+            visaCountryInput: document.getElementById('visa-country'),
+            visaAppliedDateInput: document.getElementById('visa-applied-date'),
+            visaApprovedDateInput: document.getElementById('visa-approved-date'),
+            visaValidFromInput: document.getElementById('visa-valid-from'),
+            visaValidUntilInput: document.getElementById('visa-valid-until'),
+            visaAddBtn: document.getElementById('visa-add-btn'),
+            visaSaveBtn: document.getElementById('visa-save-btn'),
+            visaExportCsvBtn: document.getElementById('visa-export-csv-btn'),
+            visaExportPdfBtn: document.getElementById('visa-export-pdf-btn'),
         };
         
-        // --- Robust Authentication Flow ---
+        // --- App Initialization ---
         function startApp() {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    // A user is signed in (either returning or just signed in anonymously).
-                    console.log("Authentication successful. User ID:", user.uid);
                     userId = user.uid;
-                    
-                    // Update the UI to show we are ready.
                     dom.saveButton.disabled = false;
                     dom.saveButton.querySelector('span').textContent = 'Save Information';
-                    
-                    // Detach any old listener before attaching a new one.
-                    if (dataListenerUnsubscribe) {
-                        dataListenerUnsubscribe();
-                    }
+                    if (dataListenerUnsubscribe) dataListenerUnsubscribe();
                     loadHistory();
-
                 } else {
-                    // No user is signed in. This will be triggered on first load.
-                    console.log("No user found. Attempting anonymous sign-in...");
+                    dom.saveButton.querySelector('span').textContent = 'Connecting...';
                     signInAnonymously(auth).catch((error) => {
                         console.error("Anonymous sign-in failed:", error);
                         dom.saveButton.querySelector('span').textContent = 'Auth Failed';
                         showToast('Authentication failed. Please check Firebase settings.', 'error');
                     });
-                    // After successful sign-in, onAuthStateChanged will fire again and run the `if (user)` block.
                 }
             });
         }
         
         // --- Event Listeners ---
         dom.uploadContainer.addEventListener('click', () => dom.passportUpload.click());
-        ['dragover', 'dragleave', 'drop'].forEach(evt => dom.uploadContainer.addEventListener(evt, e => { e.preventDefault(); dom.uploadContainer.classList.toggle('bg-[var(--bg-secondary)]', evt === 'dragover'); if (evt === 'drop' && e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); }));
+        ['dragover', 'dragleave', 'drop'].forEach(evt => dom.uploadContainer.addEventListener(evt, e => { e.preventDefault(); dom.uploadContainer.classList.toggle('!bg-gray-50', evt === 'dragover'); if (evt === 'drop' && e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); }));
         dom.passportUpload.onchange = e => { if (e.target.files.length) handleFile(e.target.files[0]); };
         dom.saveButton.onclick = savePassportData;
         [dom.searchBar, dom.sortByEl, dom.filterExpiryEl].forEach(el => el.oninput = renderHistoryCards);
-        dom.exportCsvButton.onclick = exportToCSV;
+        dom.exportCsvButton.onclick = exportAllPassportsToCSV;
         dom.cancelDeleteBtn.onclick = () => dom.deleteModal.classList.add('hidden');
         dom.themeToggle.onclick = () => { localStorage.setItem('theme', document.documentElement.classList.toggle('dark') ? 'dark' : 'light'); updateThemeIcons(); };
-        
-        // Dashboard Click Listeners
         dom.dashboardTotal.onclick = () => { dom.filterExpiryEl.value = 'all'; dom.searchBar.value = ''; renderHistoryCards(); };
         dom.dashboardExpiringSoon.onclick = () => { dom.filterExpiryEl.value = '1y'; renderHistoryCards(); };
         dom.dashboardExpiring6m.onclick = () => { dom.filterExpiryEl.value = '6m'; renderHistoryCards(); };
         
-        // Initial setup
-        dom.saveButton.querySelector('span').textContent = 'Connecting...';
-        startApp(); // Start the authentication process
+        // Modal Listeners
+        dom.closeTravelHistoryModalBtn.onclick = () => dom.travelHistoryModal.classList.add('hidden');
+        dom.thAddBtn.onclick = addNewTravelHistoryRow;
+        dom.thSaveBtn.onclick = saveTravelHistory;
+        dom.thExportCsvBtn.onclick = exportTravelHistoryToCSV;
+        dom.thExportPdfBtn.onclick = exportTravelHistoryToPDF;
+        dom.closeVisaModalBtn.onclick = () => dom.visaModal.classList.add('hidden');
+        dom.visaAddBtn.onclick = addNewVisaRow;
+        dom.visaSaveBtn.onclick = saveVisas;
+        dom.visaExportCsvBtn.onclick = exportVisaInfoToCSV;
+        dom.visaExportPdfBtn.onclick = exportVisaInfoToPDF;
+
+        function populateCountryDropdowns() {
+            const dropdowns = [dom.thCountryInput, dom.visaCountryInput];
+            dropdowns.forEach(selectElement => {
+                if (selectElement) {
+                    selectElement.innerHTML = '<option value="" disabled selected>Select a country</option>';
+                    countryList.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country;
+                        option.textContent = country;
+                        selectElement.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        startApp();
+        updateThemeIcons();
+        populateCountryDropdowns();
 
         // --- UI & Theme ---
         function updateThemeIcons() { dom.darkIcon.classList.toggle('hidden', !document.documentElement.classList.contains('dark')); dom.lightIcon.classList.toggle('hidden', document.documentElement.classList.contains('dark')); }
-        updateThemeIcons();
         
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const colors = type === 'success' ? 'bg-green-500' : 'bg-red-500';
-            toast.className = `p-4 rounded-xl shadow-lg text-white ${colors} toast-in`;
+            toast.className = `p-4 text-white ${colors} toast-in`;
+            toast.style.borderRadius = "0px";
             toast.textContent = message;
             container.appendChild(toast);
             setTimeout(() => { toast.classList.replace('toast-in', 'toast-out'); toast.addEventListener('animationend', () => toast.remove()); }, 3000);
@@ -326,33 +589,43 @@
         async function handleFile(file) {
             resetUI(); 
             dom.uploadContainer.classList.add('hidden');
-            let base64Data;
+            let currentImageBase64Url;
             if (file.type === 'application/pdf') {
                 dom.loadingSpinner.classList.remove('hidden');
-                const pdfData = await file.arrayBuffer(), pdf = await pdfjsLib.getDocument({ data: pdfData }).promise, page = await pdf.getPage(1), viewport = page.getViewport({ scale: 2.0 }), canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
-                canvas.height = viewport.height; canvas.width = viewport.width;
+                const pdfData = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 2.0 });
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
                 await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-                currentImageBase64Url = canvas.toDataURL('image/jpeg'); base64Data = currentImageBase64Url.split(',')[1]; dom.imagePreview.src = currentImageBase64Url;
+                currentImageBase64Url = canvas.toDataURL('image/jpeg');
             } else {
-                const reader = new FileReader();
-                reader.onload = e => { currentImageBase64Url = e.target.result; dom.imagePreview.src = currentImageBase64Url; base64Data = currentImageBase64Url.split(',')[1]; extractData(base64Data, file.type); };
-                reader.readAsDataURL(file);
+                currentImageBase64Url = await new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve(e.target.result);
+                    reader.readAsDataURL(file);
+                });
             }
-            if (base64Data) extractData(base64Data, 'image/jpeg');
+            dom.imagePreview.src = currentImageBase64Url;
+            const base64Data = currentImageBase64Url.split(',')[1];
+            extractData(base64Data, file.type.includes('pdf') ? 'image/jpeg' : file.type);
         }
         
         async function extractData(base64ImageData, mimeType) {
             dom.loadingSpinner.classList.remove('hidden');
-            const apiKey=firebaseConfig.apiKey; // Use the correct API key from your config
-            const model="gemini-2.5-flash-preview-05-20";
+            const apiKey=firebaseConfig.apiKey;
+            const model="gemini-pro-vision";
             const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-            const sysPrompt=`You are an expert OCR system for passports. Extract the following information and return it as a valid JSON object: Issuing Country Code, Passport No., Surname, Given Name, Nationality, Sex, Date of Birth, Place of Birth, Date of Issue, Date of Expiry. Crucially, all dates must be formatted as YYYY-MM-DD. If a field is not present, use "N/A".`;
+            const sysPrompt = `You are an expert OCR system for passports. Extract the following information and return it as a valid JSON object with camelCase keys: ${passportFields.map(f => f.key).join(', ')}. Crucially, all dates must be formatted as YYYY-MM-DD. If a field is not present, use "N/A".`;
             const payload={contents:[{parts:[{text:"Extract passport info."}, {inlineData:{mimeType, data:base64ImageData}}]}], systemInstruction:{parts:[{text:sysPrompt}]}, generationConfig:{responseMimeType:"application/json"}};
             try {
                 const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const result = await res.json();
                 if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-                    extractedJson = JSON.parse(result.candidates[0].content.parts[0].text);
+                    const extractedJson = JSON.parse(result.candidates[0].content.parts[0].text);
                     displayExtractedData(extractedJson);
                 } else { 
                     console.error("No data in Gemini response:", result); 
@@ -361,47 +634,51 @@
             } catch (e) { 
                 console.error("Gemini API error:", e); 
                 displayError("Error processing image."); 
-            } 
-            finally { 
+            } finally { 
                 dom.loadingSpinner.classList.add('hidden'); 
             }
         }
 
         function displayExtractedData(data) {
             dom.extractedDataEl.innerHTML = '';
-            checkAndDisplayExpiryWarning(data["Date of Expiry"], dom.extractedDataEl);
-            const map = { "First Name": data["Given Name"], "Last Name": data["Surname"], "Passport No.": data["Passport No."], "Issuing Country Code": data["Issuing Country Code"], "Nationality": data["Nationality"], "Sex": data["Sex"], "Date of Birth": data["Date of Birth"], "Place of Birth": data["Place of Birth"], "Date of Issue": data["Date of Issue"], "Date of Expiry": data["Date of Expiry"] };
-            for (const k in map) {
-                const v = map[k] || "N/A";
+            checkAndDisplayExpiryWarning(data.dateOfExpiry, dom.extractedDataEl);
+            
+            passportFields.forEach(field => {
+                let value = data[field.key] || "N/A";
+                if (field.key.toLowerCase().includes("date")) {
+                    value = formatDateForDisplay(value);
+                }
                 const div = document.createElement('div');
-                div.innerHTML = `<label class="block text-xs font-medium text-[var(--text-secondary)]">${k}</label><input type="text" class="form-input mt-1 text-sm" value="${v}" data-key="${k}">`;
+                div.innerHTML = `<label class="form-label mb-1 block">${field.label}</label><input type="text" class="form-input text-sm" value="${value}" data-key="${field.key}">`;
                 dom.extractedDataEl.appendChild(div);
-            }
+            });
+            
+            const age = calculateAge(data.dateOfBirth);
+            const ageDiv = document.createElement('div');
+            ageDiv.innerHTML = `<label class="form-label mb-1 block">Current Age</label><div class="text-sm text-[var(--text-primary)] mt-1 h-[42px] flex items-center">${age}</div>`;
+            dom.extractedDataEl.appendChild(ageDiv);
             dom.comparisonView.classList.remove('hidden');
         }
 
         // --- Firestore Database Operations ---
         async function savePassportData() {
-            if (!userId) {
-                showToast("Cannot save: Connection not ready. Please wait a moment.", "error");
-                return;
-            }
-            if (!currentImageBase64Url) {
-                showToast("Cannot save: No passport image is loaded.", "error");
+            if (!userId) { showToast("Cannot save: Connection not ready.", "error"); return; }
+            const dataToSave = { createdAt: new Date().toISOString(), imageData: dom.imagePreview.src, lastUpdatedAt: new Date().toISOString() };
+            
+            dom.extractedDataEl.querySelectorAll('input[data-key]').forEach(i => {
+                let value = i.value.trim() || "N/A";
+                if (i.dataset.key.toLowerCase().includes("date")) value = parseDateFromDisplay(value);
+                dataToSave[i.dataset.key] = value;
+            });
+
+            dataToSave.tags = dom.tagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
+            dataToSave.age = calculateAge(dataToSave.dateOfBirth);
+            
+            if (dataToSave.passportNo && dataToSave.passportNo !== "N/A" && allPassports.some(p => p.passportNo == dataToSave.passportNo)) {
+                showToast("A passport with this number already exists.", "error");
                 return;
             }
             try {
-                const dataToSave = { createdAt: new Date().toISOString(), imageData: currentImageBase64Url, lastUpdatedAt: new Date().toISOString() };
-                dom.extractedDataEl.querySelectorAll('input').forEach(i => { dataToSave[i.dataset.key] = i.value.trim() || "N/A"; });
-                dataToSave.tags = dom.tagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
-                const pNo = dataToSave["Passport No."];
-                if (pNo && pNo !== "N/A") {
-                    const isDup = allPassports.some(p => p["Passport No."] == pNo);
-                    if (isDup) {
-                        showToast("A passport with this number already exists.", "error");
-                        return;
-                    }
-                }
                 await addDoc(collection(db, `artifacts/${firebaseConfig.projectId}/users/${userId}/passports`), dataToSave);
                 showToast("Information saved successfully!");
                 setTimeout(resetUI, 1000);
@@ -410,169 +687,431 @@
                 showToast("Failed to save. Network or server issue.", "error");
             }
         }
+
         function loadHistory() {
             if(!userId) return;
-            const q=collection(db,`artifacts/${firebaseConfig.projectId}/users/${userId}/passports`);
-            dataListenerUnsubscribe = onSnapshot(q,snap=>{
-                allPassports=[];
-                snap.forEach(d=>allPassports.push({id:d.id,...d.data()}));
+            const q = collection(db, `artifacts/${firebaseConfig.projectId}/users/${userId}/passports`);
+            dataListenerUnsubscribe = onSnapshot(q, snap => {
+                allPassports = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderHistoryCards();
                 updateDashboardAnalytics();
-            }, (error) => {
-                console.error("Error listening to data:", error);
-            });
+            }, (error) => console.error("Error listening to data:", error));
         }
         
-        // --- Gemini LLM Call ---
-        async function getTravelAssistance(prompt, resultContainer) {
-            resultContainer.innerHTML = '<div class="flex justify-center items-center p-4"><div class="loader"></div></div>';
-            const apiKey=firebaseConfig.apiKey; // Use the correct API key from your config
-            const model="gemini-2.5-flash-preview-05-20";
-            const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                tools: [{ "google_search": {} }],
+        // --- Card and Modal Rendering ---
+        function createHistoryCard(data) {
+            const card = document.createElement('div');
+            card.className = 'bg-[var(--bg-tertiary)] p-4 border border-[var(--border-color)] space-y-3 passport-card transition-all duration-300';
+            card.dataset.docId = data.id;
+
+            const status = getExpiryStatus(data.dateOfExpiry);
+            const statusClasses = { Active: 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300', Soon: 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300', Expired: 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300' };
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'flex justify-between items-start';
+            headerDiv.innerHTML = `<div class="font-semibold text-base">${data.givenName || ''} ${data.surname || ''}</div><span class="text-xs font-medium px-2.5 py-0.5 rounded-full ${statusClasses[status]}">${status}</span>`;
+            card.appendChild(headerDiv);
+
+            const visaContainer = document.createElement('div');
+            visaContainer.className = 'flex flex-wrap gap-1.5 -mt-1';
+            if (data.securedVisas && data.securedVisas.length > 0) {
+                const visaStatusColors = {
+                    Active: 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300',
+                    Upcoming: 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300'
+                };
+                data.securedVisas.forEach(visa => {
+                    const visaStatus = getVisaStatus(visa.validFrom, visa.validUntil);
+                    if (visaStatus.text === 'Active' || visaStatus.text === 'Upcoming') {
+                        const visaTag = document.createElement('span');
+                        visaTag.className = `text-xs font-medium px-2 py-0.5 rounded-full ${visaStatusColors[visaStatus.text]}`;
+                        visaTag.textContent = `Visa: ${visa.country} (${visaStatus.text})`;
+                        visaContainer.appendChild(visaTag);
+                    }
+                });
+            }
+            card.appendChild(visaContainer);
+
+            const viewContainer = document.createElement('div');
+            viewContainer.className = 'view-mode';
+            const age = calculateAge(data.dateOfBirth);
+            viewContainer.innerHTML = `<div class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">${createDetailItem('Passport No.', data.passportNo)}${createDetailItem('Nationality', data.nationality)}${createDetailItem('Place of Birth', data.placeOfBirth)}${createDetailItem('Sex', data.sex)}${createDetailItem('Date of Birth', formatDateForDisplay(data.dateOfBirth))}${createDetailItem('Current Age', age)}${createDetailItem('Date of Issue', formatDateForDisplay(data.dateOfIssue))}${createDetailItem('Date of Expiry', formatDateForDisplay(data.dateOfExpiry), (status === 'Expired' ? 'text-red-500' : status === 'Soon' ? 'text-yellow-500' : ''))}</div>`;
+
+            if (data.tags && data.tags.length) {
+                const tagsContainer = document.createElement('div');
+                tagsContainer.className = 'mt-3 flex flex-wrap gap-1.5';
+                data.tags.forEach(t => {
+                    const tagEl = document.createElement('span');
+                    tagEl.className = 'inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded text-xs font-medium';
+                    tagEl.textContent = t;
+                    tagsContainer.appendChild(tagEl);
+                });
+                viewContainer.appendChild(tagsContainer);
+            }
+            card.appendChild(viewContainer);
+
+            const editContainer = document.createElement('div');
+            editContainer.className = 'edit-mode hidden space-y-4';
+            passportFields.forEach(field => {
+                let value = data[field.key] || '';
+                if (field.key.toLowerCase().includes("date")) value = formatDateForDisplay(value);
+                editContainer.innerHTML += `<div><label class="form-label mb-1 block">${field.label}</label><input type="text" data-key="${field.key}" value="${value}" class="form-input text-sm mt-1"></div>`;
+            });
+            editContainer.innerHTML += `<div><label class="form-label mb-1 block">Current Age</label><input type="text" value="${age}" class="form-input text-sm mt-1" readonly style="background-color: var(--bg-primary); cursor: default;"></div>`;
+            editContainer.innerHTML += `<div><label class="form-label mb-1 block">Tags</label><input type="text" data-key="tags" value="${(data.tags || []).join(', ')}" class="form-input text-sm mt-1"></div>`;
+            card.appendChild(editContainer);
+
+            const btnContainer = document.createElement('div');
+            btnContainer.className = 'flex flex-wrap gap-2 pt-4 mt-4 border-t border-[var(--border-color)]';
+            const btns = { 
+                preview: createButton('Preview', 'btn-secondary'), 
+                edit: createButton('Edit', 'btn-secondary'), 
+                del: createButton('Delete', 'btn-secondary'), 
+                travel: createButton('History', 'btn-secondary'),
+                visas: createButton('Visas', 'btn-secondary'),
+                save: createButton('Save', 'btn-primary hidden'), 
+                cancel: createButton('Cancel', 'btn-secondary hidden') 
             };
-            try {
-                const res = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-                if (!res.ok) throw new Error(`API call failed with status: ${res.status}`);
-                const result = await res.json();
-                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-                    let formattedText = result.candidates[0].content.parts[0].text;
-                    // Basic markdown to HTML
-                    formattedText = formattedText
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                        .replace(/^(#{1,6}) (.*$)/gm, (match, hashes, content) => `<h${hashes.length + 2}>${content}</h${hashes.length + 2}>`)
-                        .replace(/\n/g, '<br>');
-                    resultContainer.innerHTML = formattedText;
-                } else {
-                    console.error("No valid response from Gemini:", result);
-                    resultContainer.innerHTML = '<p class="text-red-500 text-sm">Sorry, I couldn\'t retrieve that information.</p>';
+            btnContainer.append(btns.preview, btns.edit, btns.travel, btns.visas, btns.del, btns.save, btns.cancel);
+            card.appendChild(btnContainer);
+
+            const imgContainer = document.createElement('div');
+            imgContainer.className = 'hidden mt-4';
+            if (data.imageData) {
+                imgContainer.innerHTML = `<img src="${data.imageData}" alt="Passport Preview" class="w-full border border-[var(--border-color)]">`;
+                btns.preview.onclick = () => { const isHidden = imgContainer.classList.toggle('hidden'); btns.preview.textContent = isHidden ? 'Show Preview' : 'Hide Preview'; };
+            } else {
+                btns.preview.disabled = true;
+                btns.preview.textContent = 'No Preview';
+            }
+            card.appendChild(imgContainer);
+
+            // Button Event Listeners
+            btns.edit.onclick = () => { [viewContainer, visaContainer, btns.edit, btns.del, btns.preview, btns.travel, btns.visas].forEach(el => el.classList.add('hidden'));[editContainer, btns.save, btns.cancel].forEach(el => el.classList.remove('hidden')); };
+            btns.cancel.onclick = () => { [viewContainer, visaContainer, btns.edit, btns.del, btns.preview, btns.travel, btns.visas].forEach(el => el.classList.remove('hidden'));[editContainer, btns.save, btns.cancel].forEach(el => el.classList.add('hidden')); };
+            btns.travel.onclick = () => openTravelHistoryModal(data);
+            btns.visas.onclick = () => openVisaModal(data);
+            btns.save.onclick = async () => {
+                try {
+                    const updatedData = { lastUpdatedAt: new Date().toISOString() };
+                    editContainer.querySelectorAll('input[data-key]').forEach(i => {
+                        const key = i.dataset.key;
+                        if (key === 'tags') {
+                            updatedData.tags = i.value.split(',').map(t => t.trim()).filter(Boolean);
+                        } else {
+                            updatedData[key] = key.toLowerCase().includes("date") ? parseDateFromDisplay(i.value) : i.value;
+                        }
+                    });
+                    updatedData.age = calculateAge(updatedData.dateOfBirth);
+                    await updateDoc(doc(db, `artifacts/${firebaseConfig.projectId}/users/${userId}/passports`, data.id), updatedData);
+                    btns.cancel.onclick();
+                    showToast('Record updated!');
+                } catch (error) {
+                    console.error("Update failed:", error);
+                    showToast("Failed to update record.", "error");
                 }
-            } catch (e) {
-                console.error("Gemini API error:", e);
-                resultContainer.innerHTML = `<p class="text-red-500 text-sm">An error occurred. Please check the console for details.</p>`;
+            };
+            btns.del.onclick = () => {
+                dom.deleteModal.classList.remove('hidden');
+                dom.confirmDeleteBtn.onclick = async () => {
+                    await deleteDoc(doc(db, `artifacts/${firebaseConfig.projectId}/users/${userId}/passports`, data.id));
+                    dom.deleteModal.classList.add('hidden');
+                    showToast('Record deleted.', 'error');
+                };
+            };
+            return card;
+        }
+        
+        // --- Travel History Functions ---
+        function openTravelHistoryModal(passportData) {
+            currentEditingPassportId = passportData.id;
+            dom.travelHistoryTitle.textContent = `Travel History for ${passportData.givenName || ''} ${passportData.surname || ''}`;
+            dom.travelHistoryTableBody.innerHTML = '';
+            const history = passportData.travelHistory || [];
+            history.sort((a, b) => new Date(b.entryDate) - new Date(a.entryDate));
+            if (history.length > 0) {
+                history.forEach(entry => dom.travelHistoryTableBody.appendChild(createTravelHistoryRow(entry.country, entry.entryDate, entry.exitDate)));
+            }
+            dom.travelHistoryModal.classList.remove('hidden');
+        }
+
+        function addNewTravelHistoryRow() {
+            const country = dom.thCountryInput.value;
+            const entryDate = dom.thEntryDateInput.value;
+            const exitDate = dom.thExitDateInput.value;
+            if (!country || !entryDate || !exitDate) { showToast("All fields are required.", "error"); return; }
+            if (new Date(exitDate) < new Date(entryDate)) { showToast("Exit date cannot be before entry date.", "error"); return; }
+            const newRow = createTravelHistoryRow(country, entryDate, exitDate);
+            const newEntryDate = new Date(entryDate);
+            const rows = Array.from(dom.travelHistoryTableBody.querySelectorAll('tr'));
+            const insertionPoint = rows.find(row => new Date(row.dataset.entryDate) < newEntryDate);
+            if (insertionPoint) {
+                dom.travelHistoryTableBody.insertBefore(newRow, insertionPoint);
+            } else {
+                dom.travelHistoryTableBody.appendChild(newRow);
+            }
+            dom.thCountryInput.selectedIndex = 0;
+            dom.thEntryDateInput.value = '';
+            dom.thExitDateInput.value = '';
+        }
+
+        function createTravelHistoryRow(country, entryDate, exitDate) {
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-[var(--border-color)]";
+            tr.innerHTML = `
+                <td class="p-2">${country}</td>
+                <td class="p-2">${formatDateForDisplay(entryDate)}</td>
+                <td class="p-2">${formatDateForDisplay(exitDate)}</td>
+                <td class="p-2">${calculateDays(entryDate, exitDate)}</td>
+                <td class="p-2 actions-col"><button class="text-red-500 delete-row">Delete</button></td>
+            `;
+            tr.querySelector('.delete-row').onclick = (e) => e.target.closest('tr').remove();
+            tr.dataset.country = country;
+            tr.dataset.entryDate = entryDate;
+            tr.dataset.exitDate = exitDate;
+            return tr;
+        }
+        
+        async function saveTravelHistory() {
+            if (!currentEditingPassportId) return;
+            const rows = dom.travelHistoryTableBody.querySelectorAll('tr');
+            const newTravelHistory = Array.from(rows).map(row => ({ country: row.dataset.country, entryDate: row.dataset.entryDate, exitDate: row.dataset.exitDate }));
+            try {
+                const docRef = doc(db, `artifacts/${firebaseConfig.projectId}/users/${userId}/passports`, currentEditingPassportId);
+                await updateDoc(docRef, { travelHistory: newTravelHistory });
+                showToast("Travel history updated!");
+                dom.travelHistoryModal.classList.add('hidden');
+            } catch (error) {
+                console.error("Failed to save travel history:", error);
+                showToast("Could not save travel history.", "error");
             }
         }
         
-        function createHistoryCard(data) {
-            const card=document.createElement('div');
-            card.className='bg-[var(--bg-tertiary)] p-4 rounded-xl border border-[var(--border-color)] space-y-3 passport-card shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300';
-            card.dataset.docId=data.id;
-            
-            const status=getExpiryStatus(data["Date of Expiry"]);
-            const statusClasses={Active:'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300',Soon:'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300',Expired:'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300'};
-            card.innerHTML=`<div class="flex justify-between items-start"><div class="font-semibold text-lg">${data["First Name"]||''} ${data["Last Name"]||''}</div><span class="text-xs font-medium px-2.5 py-0.5 rounded-full ${statusClasses[status]}">${status}</span></div>`;
+        // --- Visa Functions ---
+        function openVisaModal(passportData) {
+            currentEditingPassportId = passportData.id;
+            dom.visaModalTitle.textContent = `Secured Visas for ${passportData.givenName || ''} ${passportData.surname || ''}`;
+            dom.visaTableBody.innerHTML = '';
+            const visas = passportData.securedVisas || [];
+            visas.sort((a, b) => new Date(b.validFrom) - new Date(a.validFrom));
+            if (visas.length > 0) {
+                visas.forEach(visa => dom.visaTableBody.appendChild(createVisaRow(visa.country, visa.appliedDate, visa.approvedDate, visa.validFrom, visa.validUntil)));
+            }
+            dom.visaModal.classList.remove('hidden');
+        }
+        
+        function addNewVisaRow() {
+            const country = dom.visaCountryInput.value;
+            const appliedDate = dom.visaAppliedDateInput.value;
+            const approvedDate = dom.visaApprovedDateInput.value;
+            const validFrom = dom.visaValidFromInput.value;
+            const validUntil = dom.visaValidUntilInput.value;
+            if (!country || !validFrom || !validUntil || !appliedDate || !approvedDate) { showToast("All fields are required.", "error"); return; }
+            if (new Date(validUntil) < new Date(validFrom)) { showToast("Valid until date cannot be before valid from date.", "error"); return; }
+            if (new Date(approvedDate) < new Date(appliedDate)) { showToast("Approved date cannot be before applied date.", "error"); return; }
 
-            const viewContainer=document.createElement('div');viewContainer.className='view-mode';
-            viewContainer.innerHTML=`<div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">${createDetailItem('First Name',data["First Name"])}${createDetailItem('Last Name',data["Last Name"])}${createDetailItem('Passport No.',data["Passport No."])}${createDetailItem('Nationality',data["Nationality"])}${createDetailItem('Date of Birth',data["Date of Birth"])}${createDetailItem('Place of Birth',data["Place of Birth"])}${createDetailItem('Date of Issue',data["Date of Issue"])}${createDetailItem('Date of Expiry',data["Date of Expiry"], (status==='Expired'?'text-red-500':status==='Soon'?'text-yellow-500':''))}</div>`;
-            if(data.tags&&data.tags.length){const tagsContainer=document.createElement('div');tagsContainer.className='mt-2 flex flex-wrap gap-1.5';data.tags.forEach(t=>{const tagEl=document.createElement('span');tagEl.className='inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full text-xs font-medium';tagEl.textContent=t;tagsContainer.appendChild(tagEl);});viewContainer.appendChild(tagsContainer);}
+            const newRow = createVisaRow(country, appliedDate, approvedDate, validFrom, validUntil);
+            const newValidFromDate = new Date(validFrom);
+            const rows = Array.from(dom.visaTableBody.querySelectorAll('tr'));
+            const insertionPoint = rows.find(row => new Date(row.dataset.validFrom) < newValidFromDate);
+            if (insertionPoint) {
+                dom.visaTableBody.insertBefore(newRow, insertionPoint);
+            } else {
+                dom.visaTableBody.appendChild(newRow);
+            }
 
-            const editContainer=document.createElement('div');editContainer.className='edit-mode hidden space-y-2';
-            const fields=["First Name","Last Name","Passport No.","Nationality","Sex","Date of Birth","Place of Birth","Date of Issue","Date of Expiry","Issuing Country Code"];
-            fields.forEach(f=>{editContainer.innerHTML+=`<div><label class="block text-xs font-medium text-[var(--text-secondary)]">${f}</label><input type="text" data-key="${f}" value="${data[f]||''}" class="form-input text-sm mt-1"></div>`;});
-            editContainer.innerHTML+=`<div><label class="block text-xs font-medium text-[var(--text-secondary)]">Tags</label><input type="text" data-key="tags" value="${(data.tags||[]).join(', ')}" class="form-input text-sm mt-1"></div>`;
-
-            card.appendChild(viewContainer); card.appendChild(editContainer);
-            
-            const btnContainer=document.createElement('div');btnContainer.className='flex flex-wrap gap-2 pt-3 border-t border-[var(--border-color)]';
-            const btns={preview:createButton('Preview','btn-secondary'),edit:createButton('Edit','btn-secondary edit-btn'),del:createButton('Delete','btn-secondary delete-btn'),ai:createButton('✨ AI Assistant','btn-secondary'),save:createButton('Save','btn-primary save-changes-btn hidden'),cancel:createButton('Cancel','btn-secondary cancel-btn hidden')};
-            btnContainer.append(btns.preview,btns.edit,btns.del,btns.ai,btns.save,btns.cancel);
-            
-            const imgContainer=document.createElement('div');imgContainer.className='hidden mt-4';
-            if(data.imageData){imgContainer.innerHTML=`<img src="${data.imageData}" alt="Passport Preview" class="w-full h-auto rounded-md shadow border border-[var(--border-color)]">`;btns.preview.onclick=()=>{const isHidden=imgContainer.classList.toggle('hidden');btns.preview.textContent=isHidden?'Show Preview':'Hide Preview';};}else{btns.preview.disabled=true;btns.preview.textContent='No Preview';}
-            
-            // --- AI Assistant Container ---
-            const aiContainer = document.createElement('div');
-            aiContainer.className = 'hidden mt-4 pt-4 border-t border-[var(--border-color)] space-y-3';
-            const destinationInput = document.createElement('input');
-            destinationInput.type = 'text';
-            destinationInput.placeholder = 'Enter Destination Country';
-            destinationInput.className = 'form-input text-sm';
-            
-            const aiButtons = document.createElement('div');
-            aiButtons.className = 'grid grid-cols-2 gap-2';
-            const visaBtn = createButton('Check Visa', 'btn-secondary');
-            const checklistBtn = createButton('Get Checklist', 'btn-secondary');
-            aiButtons.append(visaBtn, checklistBtn);
-
-            const aiResult = document.createElement('div');
-            aiResult.className = 'mt-2 p-3 rounded-lg bg-[var(--bg-secondary)] text-sm prose dark:prose-invert max-w-none';
-            aiResult.innerHTML = '<p class="text-xs text-[var(--text-secondary)]">Enter a destination to get AI-powered travel assistance.</p>';
-
-            aiContainer.append(destinationInput, aiButtons, aiResult);
-            btns.ai.onclick = () => aiContainer.classList.toggle('hidden');
-
-            visaBtn.onclick = () => {
-                const destination = destinationInput.value.trim();
-                if (!destination) { showToast('Please enter a destination country.', 'error'); return; }
-                const prompt = `Based on the latest information, what are the tourist visa requirements for a citizen with a passport from '${data.Nationality}' traveling to '${destination}'? Provide a concise summary.`;
-                getTravelAssistance(prompt, aiResult);
-            };
-
-            checklistBtn.onclick = () => {
-                const destination = destinationInput.value.trim();
-                if (!destination) { showToast('Please enter a destination country.', 'error'); return; }
-                const prompt = `Create a concise but comprehensive pre-travel checklist for a tourist from '${data.Nationality}' traveling to '${destination}'. Use markdown for formatting with clear headings like Documents, Health & Safety, Money, and Packing.`;
-                getTravelAssistance(prompt, aiResult);
-            };
-
-            card.appendChild(btnContainer);
-            card.appendChild(imgContainer);
-            card.appendChild(aiContainer);
-
-            btns.edit.onclick=()=>{[viewContainer,btns.edit,btns.del,btns.preview,btns.ai].forEach(el=>el.classList.add('hidden'));[editContainer,btns.save,btns.cancel].forEach(el=>el.classList.remove('hidden'));};
-            btns.cancel.onclick=()=>{[viewContainer,btns.edit,btns.del,btns.preview,btns.ai].forEach(el=>el.classList.remove('hidden'));[editContainer,btns.save,btns.cancel].forEach(el=>el.classList.add('hidden'));};
-            btns.save.onclick=async()=>{const updatedData={lastUpdatedAt:new Date().toISOString()};editContainer.querySelectorAll('input').forEach(i=>{if(i.dataset.key==='tags')updatedData.tags=i.value.split(',').map(t=>t.trim()).filter(Boolean);else updatedData[i.dataset.key]=i.value;});await updateDoc(doc(db,`artifacts/${firebaseConfig.projectId}/users/${userId}/passports`,data.id),updatedData);showToast('Record updated!');};
-            btns.del.onclick=()=>{dom.deleteModal.classList.remove('hidden');dom.confirmDeleteBtn.onclick=async()=>{await deleteDoc(doc(db,`artifacts/${firebaseConfig.projectId}/users/${userId}/passports`,data.id));dom.deleteModal.classList.add('hidden');showToast('Record deleted.','error');};};
-            return card;
+            dom.visaCountryInput.selectedIndex = 0;
+            dom.visaAppliedDateInput.value = '';
+            dom.visaApprovedDateInput.value = '';
+            dom.visaValidFromInput.value = '';
+            dom.visaValidUntilInput.value = '';
         }
 
-        // --- UI Helper Functions ---
-        function createDetailItem(label, value, valueClass = '') { return `<div><div class="text-xs text-[var(--text-secondary)]">${label}</div><div class="text-[var(--text-primary)] font-medium ${valueClass}">${value || 'N/A'}</div></div>`; }
-        function createButton(text, className) { const btn=document.createElement('button');btn.className=`btn text-sm flex-1 ${className}`;btn.textContent=text; return btn; }
+        function createVisaRow(country, appliedDate, approvedDate, validFrom, validUntil) {
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-[var(--border-color)]";
+            const status = getVisaStatus(validFrom, validUntil);
+            const statusColors = { Active: "text-green-500", Upcoming: "text-yellow-500", Expired: "text-red-500", Unknown: "text-gray-500" };
+            tr.innerHTML = `
+                <td class="p-2">${country} <span class="font-bold ${statusColors[status.text]}">(${status.text})</span></td>
+                <td class="p-2">${formatDateForDisplay(appliedDate)}</td>
+                <td class="p-2">${formatDateForDisplay(approvedDate)}</td>
+                <td class="p-2">${formatDateForDisplay(validFrom)}</td>
+                <td class="p-2">${formatDateForDisplay(validUntil)}</td>
+                <td class="p-2 actions-col"><button class="text-red-500 delete-row">Delete</button></td>
+            `;
+            tr.querySelector('.delete-row').onclick = (e) => e.target.closest('tr').remove();
+            tr.dataset.country = country;
+            tr.dataset.appliedDate = appliedDate;
+            tr.dataset.approvedDate = approvedDate;
+            tr.dataset.validFrom = validFrom;
+            tr.dataset.validUntil = validUntil;
+            return tr;
+        }
+
+        async function saveVisas() {
+            if (!currentEditingPassportId) return;
+            const rows = dom.visaTableBody.querySelectorAll('tr');
+            const newVisas = Array.from(rows).map(row => ({ 
+                country: row.dataset.country, 
+                appliedDate: row.dataset.appliedDate,
+                approvedDate: row.dataset.approvedDate,
+                validFrom: row.dataset.validFrom, 
+                validUntil: row.dataset.validUntil 
+            }));
+            try {
+                const docRef = doc(db, `artifacts/${firebaseConfig.projectId}/users/${userId}/passports`, currentEditingPassportId);
+                await updateDoc(docRef, { securedVisas: newVisas });
+                showToast("Visa list updated!");
+                dom.visaModal.classList.add('hidden');
+            } catch (error) {
+                console.error("Failed to save visas:", error);
+                showToast("Could not save visas.", "error");
+            }
+        }
         
-        function getExpiryStatus(expiryDateString) {
-            if(!expiryDateString||expiryDateString==="N/A")return'Active';const expiryDate=new Date(expiryDateString),now=new Date(),oneYearFromNow=new Date();oneYearFromNow.setFullYear(now.getFullYear()+1);
-            if(isNaN(expiryDate))return'Active';if(expiryDate<now)return'Expired';if(expiryDate<oneYearFromNow)return'Soon';return'Active';
+        // --- CSV & PDF Export Functions ---
+        function exportDataToCSV(headers, rows, fileName) {
+            const sanitizedRows = rows.map(row => row.map(item => `"${(item || '').toString().replace(/"/g, '""')}"`));
+            const csvContent = [ headers.join(','), ...sanitizedRows.map(row => row.join(',')) ].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function exportContentToPDF(elementId, fileName) {
+            const originalElement = document.getElementById(elementId);
+            if (!originalElement) { console.error("Element not found for PDF export:", elementId); return; }
+            
+            const printWrapper = document.createElement('div');
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            printWrapper.className = isDarkMode ? 'dark' : '';
+            printWrapper.style.padding = '1rem';
+            printWrapper.style.fontFamily = `'Inter', sans-serif`;
+            printWrapper.style.backgroundColor = `var(--bg-tertiary)`;
+            printWrapper.style.color = `var(--text-primary)`;
+            
+            const elementToPrint = originalElement.cloneNode(true);
+            elementToPrint.querySelectorAll('.actions-col').forEach(el => el.remove());
+            elementToPrint.querySelectorAll('.delete-row').forEach(el => el.closest('td').remove());
+            printWrapper.appendChild(elementToPrint);
+            document.body.appendChild(printWrapper);
+
+            const options = {
+                margin:       0.5,
+                filename:     fileName,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+
+            html2pdf().set(options).from(printWrapper).save().then(() => {
+                document.body.removeChild(printWrapper);
+            });
+        }
+
+        function exportTravelHistoryToCSV() {
+            if (!currentEditingPassportId) return;
+            const passportData = allPassports.find(p => p.id === currentEditingPassportId);
+            if (!passportData || !passportData.travelHistory || passportData.travelHistory.length === 0) {
+                showToast("No travel history to export.", "error"); return;
+            }
+            const headers = ["Country", "Date of Entry", "Date of Exit", "Number of Days"];
+            const rows = passportData.travelHistory.map(entry => [
+                entry.country,
+                formatDateForDisplay(entry.entryDate),
+                formatDateForDisplay(entry.exitDate),
+                calculateDays(entry.entryDate, entry.exitDate)
+            ]);
+            const fileName = `Travel_History_${passportData.givenName}_${passportData.surname}.csv`;
+            exportDataToCSV(headers, rows, fileName);
+        }
+
+        function exportTravelHistoryToPDF() {
+             if (!currentEditingPassportId) return;
+            const passportData = allPassports.find(p => p.id === currentEditingPassportId);
+            const fileName = `Travel_History_${passportData.givenName}_${passportData.surname}.pdf`;
+            exportContentToPDF('th-content-to-export', fileName);
+        }
+
+        function exportVisaInfoToCSV() {
+            if (!currentEditingPassportId) return;
+            const passportData = allPassports.find(p => p.id === currentEditingPassportId);
+            if (!passportData || !passportData.securedVisas || passportData.securedVisas.length === 0) {
+                showToast("No visa information to export.", "error"); return;
+            }
+            const headers = ["Country", "Status", "Applied Date", "Approved Date", "Valid From", "Valid Until"];
+            const rows = passportData.securedVisas.map(visa => {
+                const status = getVisaStatus(visa.validFrom, visa.validUntil);
+                return [ visa.country, status.text, formatDateForDisplay(visa.appliedDate), formatDateForDisplay(visa.approvedDate), formatDateForDisplay(visa.validFrom), formatDateForDisplay(visa.validUntil) ];
+            });
+            const fileName = `Visa_Info_${passportData.givenName}_${passportData.surname}.csv`;
+            exportDataToCSV(headers, rows, fileName);
+        }
+        
+        function exportVisaInfoToPDF() {
+            if (!currentEditingPassportId) return;
+            const passportData = allPassports.find(p => p.id === currentEditingPassportId);
+            const fileName = `Visa_Info_${passportData.givenName}_${passportData.surname}.pdf`;
+            exportContentToPDF('visa-content-to-export', fileName);
+        }
+
+        function exportAllPassportsToCSV() {
+            if(allPassports.length===0){showToast("No records to export.","error");return;}
+            const headers = passportFields.map(f => f.label);
+            headers.push("Current Age", "Tags");
+            const rows = allPassports.map(p => {
+                const rowData = passportFields.map(field => {
+                    let value = p[field.key] || '';
+                    if (field.key.toLowerCase().includes('date')) value = formatDateForDisplay(value);
+                    return value;
+                });
+                rowData.push(calculateAge(p.dateOfBirth));
+                rowData.push((p.tags || []).join('; '));
+                return rowData;
+            });
+            exportDataToCSV(headers, rows, "passport_records.csv");
+        }
+
+
+        // --- UI Helper Functions ---
+        function createDetailItem(label, value, valueClass = '') { 
+            return `<div><div class="form-label">${label}</div><div class="text-sm text-[var(--text-primary)] mt-1 ${valueClass}">${value || 'N/A'}</div></div>`; 
+        }
+        function createButton(text, className) { const btn=document.createElement('button');btn.className=`btn text-xs flex-1 ${className}`;btn.textContent=text; return btn; }
+        
+        function getExpiryStatus(isoDate) {
+            if (!isoDate || isoDate === 'N/A') return 'Active';
+            const expiryDate = new Date(isoDate);
+            if (isNaN(expiryDate.getTime())) return 'Active';
+            const now = new Date();
+            const oneYearFromNow = new Date();
+            oneYearFromNow.setFullYear(now.getFullYear() + 1);
+            if (expiryDate < now) return 'Expired';
+            if (expiryDate < oneYearFromNow) return 'Soon';
+            return 'Active';
         }
         
         function renderHistoryCards() {
             let filtered=[...allPassports]; const term=dom.searchBar.value.toLowerCase(),filter=dom.filterExpiryEl.value;
-            if(term)filtered=filtered.filter(p=>`${p["First Name"]||''} ${p["Last Name"]||''}`.toLowerCase().includes(term)||(p.tags||[]).join(' ').toLowerCase().includes(term));
-            
+            if(term)filtered=filtered.filter(p=>`${p.givenName||''} ${p.surname||''}`.toLowerCase().includes(term)||(p.tags||[]).join(' ').toLowerCase().includes(term));
             const now = new Date();
-            if (filter === '6m') {
-                const sixM = new Date();
-                sixM.setMonth(now.getMonth() + 6);
-                filtered = filtered.filter(p => { const exp = new Date(p["Date of Expiry"]); return !isNaN(exp) && exp > now && exp < sixM; });
-            } else if (filter === '1y') {
-                const oneY = new Date();
-                oneY.setFullYear(now.getFullYear() + 1);
-                filtered = filtered.filter(p => { const exp = new Date(p["Date of Expiry"]); return !isNaN(exp) && exp > now && exp < oneY; });
-            }
-
-            filtered.sort((a,b)=>{const sort=dom.sortByEl.value;if(sort==='createdAt')return new Date(b.createdAt)-new Date(a.createdAt);if(sort==='LastName')return(a["Last Name"]||'').localeCompare(b["Last Name"]||'');if(sort==='DateofExpiry')return new Date(a["Date of Expiry"])-new Date(b["Date of Expiry"]);return 0;});
+            if (filter === '6m') { const sixM = new Date(); sixM.setMonth(now.getMonth() + 6); filtered = filtered.filter(p => { const exp = new Date(p.dateOfExpiry); return !isNaN(exp) && exp > now && exp < sixM; }); }
+            else if (filter === '1y') { const oneY = new Date(); oneY.setFullYear(now.getFullYear() + 1); filtered = filtered.filter(p => { const exp = new Date(p.dateOfExpiry); return !isNaN(exp) && exp > now && exp < oneY; }); }
+            filtered.sort((a,b)=>{const sort=dom.sortByEl.value;if(sort==='createdAt')return new Date(b.createdAt)-new Date(a.createdAt);if(sort==='LastName')return(a.surname||'').localeCompare(b.surname||'');if(sort==='DateofExpiry')return new Date(a.dateOfExpiry)-new Date(b.dateOfExpiry);return 0;});
             dom.historyContainer.innerHTML='';
-            if(allPassports.length === 0) dom.historyContainer.innerHTML = `<div class="text-center py-10 px-4"><svg class="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 11c0 3.517-1.009 6.789-2.756 9.348m-2.28-2.28A9.961 9.961 0 0112 11c0-5.523 4.477-10 10-10 4.386 0 8.217 2.783 9.575 6.75M12 11c-3.517 0-6.789-1.009-9.348-2.756m2.28 2.28A9.961 9.961 0 0112 11z"/></svg><h3 class="mt-2 text-lg font-medium">No Passports Saved</h3><p class="mt-1 text-sm">Upload your first passport to get started.</p></div>`;
-            else if(filtered.length === 0) dom.historyContainer.innerHTML = `<p class="text-center py-4">No records match or filter.</p>`;
+            if(allPassports.length === 0) dom.historyContainer.innerHTML = `<div class="text-center py-10 px-4"><svg class="mx-auto h-12 w-12 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7m-4 4h.01M7 11h.01M11 11h.01M15 11h.01M3 7l-2 4h22l-2-4M3 7l4-4M21 7l-4-4m-4 4l-2-4m4 4l2-4"/></svg><h3 class="mt-2 text-base font-medium">No Passports Saved</h3><p class="mt-1 text-sm text-[var(--text-secondary)]">Upload your first passport to get started.</p></div>`;
+            else if(filtered.length === 0) dom.historyContainer.innerHTML = `<p class="text-center py-4">No records match your filter.</p>`;
             else filtered.forEach(p=>dom.historyContainer.appendChild(createHistoryCard(p)));
-
             updateDashboardHighlights();
         }
         
         function updateDashboardHighlights() {
-            const filter = dom.filterExpiryEl.value;
-            const searchTerm = dom.searchBar.value;
-            
-            // Reset all highlights
-            dom.dashboardTotal.classList.remove('active-dashboard-filter');
-            dom.dashboardExpiringSoon.classList.remove('active-dashboard-filter');
-            dom.dashboardExpiring6m.classList.remove('active-dashboard-filter');
-
-            if (searchTerm) return; // Don't highlight if a search is active
-
+            const filter = dom.filterExpiryEl.value, searchTerm = dom.searchBar.value;
+            dom.dashboardTotal.classList.remove('active-dashboard-filter'); dom.dashboardExpiringSoon.classList.remove('active-dashboard-filter'); dom.dashboardExpiring6m.classList.remove('active-dashboard-filter');
+            if (searchTerm) return; 
             if (filter === 'all') { dom.dashboardTotal.classList.add('active-dashboard-filter'); } 
             else if (filter === '1y') { dom.dashboardExpiringSoon.classList.add('active-dashboard-filter'); } 
             else if (filter === '6m') { dom.dashboardExpiring6m.classList.add('active-dashboard-filter'); }
@@ -582,44 +1121,29 @@
             document.getElementById('total-records').textContent = allPassports.length;
             const now=new Date(),oneYr=new Date();oneYr.setFullYear(now.getFullYear()+1);const sixMo=new Date();sixMo.setMonth(now.getMonth()+6);
             let soon=0,six=0;
-            allPassports.forEach(p=>{const exp=new Date(p["Date of Expiry"]);if(!isNaN(exp) && exp > now){if(exp<oneYr)soon++;if(exp<sixMo)six++;}});
+            allPassports.forEach(p=>{const exp=new Date(p.dateOfExpiry);if(!isNaN(exp) && exp > now){if(exp<oneYr)soon++;if(exp<sixMo)six++;}});
             document.getElementById('expiring-soon').textContent=soon;
             document.getElementById('expiring-6m').textContent=six;
         }
 
         function checkAndDisplayExpiryWarning(expiryDateString, container) {
             const status=getExpiryStatus(expiryDateString);if(status==='Active')return;
-            const expiryDate=new Date(expiryDateString);const isExpired=status==='Expired';
-            const warning=document.createElement('div');warning.className=`p-3 rounded-lg mb-4 ${isExpired?'bg-red-100 dark:bg-red-900/50 border-l-4 border-red-500 text-red-700 dark:text-red-300':'bg-yellow-100 dark:bg-yellow-900/50 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300'}`;
-            warning.innerHTML=`<p class="font-bold">${isExpired?'Passport Expired':'Expiry Warning'}</p><p class="text-sm">${isExpired?`This passport expired on ${expiryDate.toLocaleDateString()}.`:`This passport expires soon: ${expiryDate.toLocaleDateString()}.`}</p>`;
+            const isExpired=status==='Expired';
+            const warning=document.createElement('div');warning.className=`p-3 ${isExpired?'bg-red-100 dark:bg-red-900/50 border-l-4 border-red-500 text-red-700 dark:text-red-300':'bg-yellow-100 dark:bg-yellow-900/50 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300'}`;
+            warning.innerHTML=`<p class="font-bold">${isExpired?'Passport Expired':'Expiry Warning'}</p><p class="text-sm">${isExpired?`This passport expired on ${formatDateForDisplay(expiryDateString)}.`:`This passport expires soon: ${formatDateForDisplay(expiryDateString)}.`}</p>`;
             container.prepend(warning);
         }
-
-        function exportToCSV() {
-            if(allPassports.length===0){showToast("No records to export.","error");return;}
-            const headers=["First Name","Last Name","Passport No.","Issuing Country Code","Nationality","Sex","Date of Birth","Place of Birth","Date of Issue","Date of Expiry","Tags"];
-            const csvRows=[headers.join(',')];
-            allPassports.forEach(p=>{const row=headers.map(h=>{let v=p[h]||'';if(h==='Tags')v=(p.tags||[]).join('; ');return`"${v.toString().replace(/"/g,'""')}"`;});csvRows.push(row.join(','));});
-            const blob=new Blob([csvRows.join('\n')],{type:'text/csv;charset=utf-8;'});const link=document.createElement('a'),url=URL.createObjectURL(blob);
-            link.setAttribute('href',url);link.setAttribute('download','passport_records.csv');link.style.visibility='hidden';document.body.appendChild(link);link.click();document.body.removeChild(link);
-        }
-
+        
         function resetUI() { 
-            dom.passportUpload.value='';
-            dom.uploadContainer.classList.remove('hidden');
+            dom.uploadContainer.classList.remove('hidden'); 
             dom.comparisonView.classList.add('hidden');
-            dom.imagePreview.src='#';
-            dom.loadingSpinner.classList.add('hidden');
-            dom.extractedDataEl.innerHTML='';
-            dom.tagsInput.value='';
-            extractedJson=null;
-            currentImageBase64Url=null;
+            dom.passportUpload.value=''; 
         }
         function displayError(message) { 
-            dom.extractedDataEl.innerHTML=`<p class="text-red-500 text-center">${message}</p>`;
+            const errorContainer = document.getElementById('extracted-data');
+            errorContainer.innerHTML=`<p class="text-red-500 text-center">${message}</p>`;
             dom.comparisonView.classList.remove('hidden');
         }
     </script>
 </body>
 </html>
-
