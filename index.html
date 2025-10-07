@@ -617,7 +617,7 @@
         async function extractData(base64ImageData, mimeType) {
             dom.loadingSpinner.classList.remove('hidden');
             const apiKey=firebaseConfig.apiKey;
-            const model="gemini-pro-vision";
+            const model="gemini-2.5-flash";
             const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
             const sysPrompt = `You are an expert OCR system for passports. Extract the following information and return it as a valid JSON object with camelCase keys: ${passportFields.map(f => f.key).join(', ')}. Crucially, all dates must be formatted as YYYY-MM-DD. If a field is not present, use "N/A".`;
             const payload={contents:[{parts:[{text:"Extract passport info."}, {inlineData:{mimeType, data:base64ImageData}}]}], systemInstruction:{parts:[{text:sysPrompt}]}, generationConfig:{responseMimeType:"application/json"}};
